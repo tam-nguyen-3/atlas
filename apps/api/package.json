@@ -4,14 +4,22 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc -b"
+    "build": "tsc -b",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx --env-file-if-exists=../../.env src/db/migrate.ts",
+    "db:seed": "tsx --env-file-if-exists=../../.env src/db/seed.ts",
+    "db:seed:test": "tsx --env-file-if-exists=../../.env src/db/seed-test-user.ts"
   },
   "dependencies": {
     "@atlas/shared": "workspace:*",
+    "better-auth": "^1.7.16",
+    "drizzle-orm": "^0.45.4",
     "pg": "^8.23.1"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",
-    "@types/pg": "^8.23.1"
+    "@types/pg": "^8.23.1",
+    "drizzle-kit": "^0.31.11",
+    "tsx": "^4.23.15"
   }
 }

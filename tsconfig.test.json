@@ -6,7 +6,9 @@
   },
   "include": [
     "apps/*/src/**/*.test.ts",
+    "apps/api/src/test/**/*.ts",
     "packages/*/src/**/*.test.ts",
+    "apps/api/drizzle.config.ts",
     "vitest.config.ts"
   ],
   "references": [

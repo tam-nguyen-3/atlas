@@ -56,7 +56,11 @@ pnpm workspace:
 
 ## Search notes
 - A generated `search_vector` can't read from another table, so tagged place names aren't searchable by default.
-- Check accent handling and the text search configuration early.
+- Search uses the `public.atlas_search` text search configuration: a copy of `simple` that also runs `unaccent`, so `cafe` finds `café` and the reverse. Query it with `websearch_to_tsquery('public.atlas_search', q)`.
+- A generated column can't call `unaccent()` directly because it isn't immutable, but it can use this configuration through two-argument `to_tsvector`. The first migration creates it, which needs the `unaccent` extension.
+- Known limits, covered by `apps/api/src/db/search.test.ts`:
+  - Word endings stay distinct in every language and common words remain searchable.
+  - Postgres doesn't segment Japanese, so a run of Japanese text is one token and part of a run won't match. Romanised text works.
 - Add `pg_trgm` only if testing shows typos are a real problem.
 
 ## Places notes

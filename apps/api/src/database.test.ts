@@ -1,12 +1,9 @@
 import pg from "pg";
 import { afterAll, beforeAll, expect, test } from "vitest";
 import { SERVICE_NAME } from "./index.js";
+import { testDatabaseUrl } from "./test/database.js";
 
-const connectionString =
-  process.env.TEST_DATABASE_URL ??
-  "postgres://atlas:atlas@127.0.0.1:5432/atlas_test";
-
-const client = new pg.Client({ connectionString });
+const client = new pg.Client({ connectionString: testDatabaseUrl });
 
 beforeAll(async () => {
   await client.connect();

@@ -1,3 +1,6 @@
 packages:
   - apps/*
   - packages/*
+allowBuilds:
+  # Ships prebuilt binaries, so its install script isn't needed.
+  esbuild: false

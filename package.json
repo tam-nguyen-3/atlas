@@ -15,7 +15,11 @@
     "test": "vitest run",
     "build": "pnpm -r run build",
     "db:up": "docker compose up -d --wait",
-    "db:down": "docker compose down"
+    "db:down": "docker compose down",
+    "db:generate": "pnpm --filter @atlas/api db:generate",
+    "db:migrate": "pnpm --filter @atlas/api db:migrate",
+    "db:seed": "pnpm --filter @atlas/api db:seed",
+    "db:seed:test": "pnpm --filter @atlas/api db:seed:test"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

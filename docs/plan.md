@@ -2,7 +2,7 @@
 
 Tracks everything needed to take Minerva Atlas from specs to pilot. Scope and behaviour live in [product.md](product.md), [architecture.md](architecture.md), [api.md](api.md), and [schema.md](schema.md); this file only tracks the work.
 
-- **Claude**: steps Claude can do in this repo.
+- **Agent**: steps the coding agent can do in this repo.
 - **You**: steps only you can do, such as accounts, secrets, decisions, content, and people.
 - Tick a box when the step is done. If a decision changes the scope, update the spec it affects too.
 
@@ -20,9 +20,9 @@ Written specs currently win where the wireframes differ.
 - [x] MVP sign-in uses email and password; Google sign-in comes later
 - [x] MVP sign-up doesn't verify that an email address is real, and there's no self-serve password reset
 - [x] Check whether Minerva needs to approve a pilot or use of its name
-- [x] Sign-up, sign-in, profile, "my insights", edit, and delete have no wireframes: Claude follows the existing style, and you review them in Phase 5
+- [x] Sign-up, sign-in, profile, "my insights", edit, and delete have no wireframes: the agent follows the existing style, and you review them in Phase 5
 
-Wireframe differences Claude will handle this way unless you say otherwise:
+Wireframe differences the agent will handle this way unless you say otherwise:
 - The form's "tags (optional)" becomes a required category picker
 - Cities and source URL go under the form's "more details"
 - Sort options go behind the search bar's filter icon
@@ -34,17 +34,17 @@ Wireframe differences Claude will handle this way unless you say otherwise:
 ### You: set up accounts
 - [x] Create accounts: GitHub, Vercel, Render, Supabase, Google Cloud (for Places)
 
-### Claude
+### Agent
 - [x] Compare all wireframes with the specs and add any other conflicts to the list above
 - [x] Read Google's current terms and summarise: storing `display_name`, attribution without a map (see [architecture.md](architecture.md))
 - [x] Confirm current free-tier limits on Vercel, Render, Supabase, and Google Maps (see [architecture.md](architecture.md))
 
-### You: after Claude's review
+### You: after the agent's review
 - [x] Show place names and addresses by live lookup: store only the place ID and fetch details when shown
 
 ## Phase 1: Repo foundation
 
-### Claude
+### Agent
 - [x] Initialise git and add `.gitignore`
 - [x] Set up the pnpm workspace: `apps/web`, `apps/api`, `packages/shared`
 - [x] Configure TypeScript, a linter and formatter, and Vitest
@@ -54,21 +54,21 @@ Wireframe differences Claude will handle this way unless you say otherwise:
 - [x] Add a README with setup steps
 
 ### You
-- [ ] Create the GitHub repo and give Claude the remote to push to
-- [ ] Review the first PR and confirm CI passes on GitHub
+- [x] Create the GitHub repo and give the agent the remote to push to
+- [x] Review the first PR and confirm CI passes on GitHub
 
 ## Phase 2: Database
 
-### Claude
-- [ ] Define the Drizzle schema and first migration from `schema.md`, aligned with Better Auth's tables
-- [ ] Add the generated `search_vector` column and GIN index
-- [ ] Check accent handling and the text search configuration early
-- [ ] Add idempotent seed scripts for the cities and categories in `schema.md`, and choose category icons
-- [ ] Add a seeded test user with a password, for test environments only
+### Agent
+- [x] Define the Drizzle schema and first migration from `schema.md`, aligned with Better Auth's tables
+- [x] Add the generated `search_vector` column and GIN index
+- [x] Check accent handling and the text search configuration early
+- [x] Add idempotent seed scripts for the cities and categories in `schema.md`, and choose category icons
+- [x] Add a seeded test user with a password, for test environments only
 
 ## Phase 3: Authentication
 
-### Claude
+### Agent
 - [ ] Set up Fastify with `fastify-type-provider-zod`, the shared error shape, and `GET /api/health`
 - [ ] Integrate Better Auth with email and password, the Drizzle adapter, and Postgres sessions
 - [ ] Enforce allowed domains on the server at sign-up: `minerva.edu`, `uni.minerva.edu`
@@ -81,7 +81,7 @@ Wireframe differences Claude will handle this way unless you say otherwise:
 
 ## Phase 4: Core API
 
-### Claude
+### Agent
 - [ ] Add Zod request and response schemas in `packages/shared`
 - [ ] Add `GET /api/cities` and `GET /api/categories`
 - [ ] Add insight create, read, edit, and hard delete, with several categories and author-only checks
@@ -92,7 +92,7 @@ Wireframe differences Claude will handle this way unless you say otherwise:
 
 ## Phase 5: Frontend
 
-### Claude
+### Agent
 - [ ] Set up Vite, React, TanStack Router and Query, Tailwind, and shadcn/ui
 - [ ] Add the API client and app shell, with "Agent" and "Discover" nav items linking to empty placeholders
 - [ ] Build sign-up and sign-in, including the rejected-domain state
@@ -113,7 +113,7 @@ Wireframe differences Claude will handle this way unless you say otherwise:
 - [ ] Create the browser key, restricted by site and to those two APIs
 - [ ] Set quotas and budget alerts
 
-### Claude
+### Agent
 - [ ] Build the places combobox with Places API (New) and `@vis.gl/react-google-maps`, using session tokens
 - [ ] Fetch place names and addresses live in insight details, with Google Maps attribution, a link to each place, and a fallback link if the lookup fails
 - [ ] Make place tagging optional, so insights still work without it
@@ -126,8 +126,9 @@ Wireframe differences Claude will handle this way unless you say otherwise:
 - [ ] Create the Vercel project and set its environment variables
 - [ ] Add production URLs to the Maps key restrictions
 - [ ] Approve and run production migrations and seeds as a deliberate step, from your machine or CI
+  - The first migration creates the `unaccent` extension, which hasn't been run on Supabase yet, so check that it succeeds there.
 
-### Claude
+### Agent
 - [ ] Add the API Dockerfile and Render health check configuration
 - [ ] Add the Vercel rewrite from `/api/*` to Render, and send `Cache-Control: no-store` on API responses
 - [ ] Connect the API to Supabase through the shared pooler in session mode, with a small connection pool
@@ -148,7 +149,7 @@ Wireframe differences Claude will handle this way unless you say otherwise:
 - [ ] Take regular database backups, since Supabase's free plan has no automatic ones
 - [ ] Review the feedback and choose what comes next
 
-### Claude
+### Agent
 - [ ] Fix bugs found in the pilot
 - [ ] Add `pg_trgm` only if testing shows typos are a real problem
 - [ ] Write the removal steps for handling requests in the database

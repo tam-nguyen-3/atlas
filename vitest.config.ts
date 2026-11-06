@@ -26,6 +26,9 @@ export default defineConfig({
           name: "api",
           root: "apps/api",
           include: ["src/**/*.test.ts"],
+          globalSetup: ["src/test/global-setup.ts"],
+          // Test files share one database.
+          fileParallelism: false,
         },
       },
       {

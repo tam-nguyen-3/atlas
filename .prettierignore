@@ -1,7 +1,9 @@
 docs/
+AGENTS.md
 CLAUDE.md
 dist/
 coverage/
 playwright-report/
 test-results/
 pnpm-lock.yaml
+apps/api/drizzle/
