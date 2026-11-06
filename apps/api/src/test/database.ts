@@ -14,7 +14,7 @@ export async function truncateAll(db: Db): Promise<void> {
   await db.execute(sql`
     TRUNCATE users, sessions, accounts, verifications, cities, categories,
       places, insights, insight_categories, insight_cities, insight_places,
-      insight_votes
+      insight_votes, rate_limits
   `);
 }
 

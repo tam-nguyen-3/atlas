@@ -1,5 +1,5 @@
 # Data schema
-Every `id` is a `uuid` with a `gen_random_uuid()` default, and timestamps are `timestamptz`. The Drizzle schema is in `apps/api/src/db/schema.ts`.
+Every `id` is a `uuid` with a `gen_random_uuid()` default, and timestamps are `timestamptz` except the Better Auth rate-limit millisecond counter noted below. The Drizzle schema is in `apps/api/src/db/schema.ts`.
 
 - users: id, email, email_verified, display_name, cohort (optional), avatar_url (optional), created_at, updated_at
   - CREATE UNIQUE INDEX users_email_lower_uq ON users (lower(email));
@@ -9,6 +9,10 @@ Every `id` is a `uuid` with a `gen_random_uuid()` default, and timestamps are `t
   - `avatar_url` stays empty until Google sign-in is added.
 - cities: id, slug, name, country, timezone, sort_order
   - UNIQUE (slug)
+- rate_limits: id, key, count, last_request
+  - Better Auth's `rateLimit` model, mapped through the plural `rateLimits` Drizzle export.
+  - `key` is unique; `count` is an integer; `last_request` is a bigint containing epoch milliseconds (exposed as a JavaScript number).
+  - Index `last_request` for Better Auth's opportunistic expiry cleanup. Counters persist across API restarts and are shared across instances.
 - categories: id, slug, name (display name), icon, sort_order
   - UNIQUE (slug)
   - `icon` is a [Lucide](https://lucide.dev/icons/) icon name.

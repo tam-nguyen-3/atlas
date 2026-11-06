@@ -59,36 +59,74 @@ Wireframe differences the agent will handle this way unless you say otherwise:
 
 ## Phase 2: Database
 
+Completed locally on `main` in commit `1278be6`.
+
 ### Agent
 - [x] Define the Drizzle schema and first migration from `schema.md`, aligned with Better Auth's tables
 - [x] Add the generated `search_vector` column and GIN index
 - [x] Check accent handling and the text search configuration early
 - [x] Add idempotent seed scripts for the cities and categories in `schema.md`, and choose category icons
 - [x] Add a seeded test user with a password, for test environments only
+- [x] Verify migrations against a fresh Postgres database and rerun them to check migration tracking
+- [x] Verify seeds, Better Auth credential sign-in, constraints, deletion cascades, and accent-folding search with distinct word endings
+- [x] Pass all 46 tests, formatting checks, lint, type checks, and build locally
 
 ## Phase 3: Authentication
 
+Completed locally, with manual Postman verification confirmed on 2026-11-06. Next up is Phase 4: Core API. Better Auth keeps its native error format under `/api/auth/*`; Atlas routes use the shared error envelope. The frontend remains in Phase 5.
+
 ### Agent
-- [ ] Set up Fastify with `fastify-type-provider-zod`, the shared error shape, and `GET /api/health`
-- [ ] Integrate Better Auth with email and password, the Drizzle adapter, and Postgres sessions
-- [ ] Enforce allowed domains on the server at sign-up: `minerva.edu`, `uni.minerva.edu`
-- [ ] Rate limit sign-up and sign-in
-- [ ] Require a session on all content routes and check `Origin` on state-changing routes
-- [ ] Add `GET` and `PATCH /api/me`, validating the cohort format
+- [x] Set up Fastify with `fastify-type-provider-zod`, the shared error shape, and `GET /api/health`
+- [x] Integrate Better Auth with email and password, the Drizzle adapter, and Postgres sessions
+- [x] Enforce allowed domains on the server at sign-up: `minerva.edu`, `uni.minerva.edu`
+- [x] Rate limit sign-up and sign-in with shared Postgres counters and a Drizzle migration
+- [x] Require a session on all content routes and check `Origin` on state-changing routes
+- [x] Add `GET` and `PATCH /api/me`, validating the cohort format
+- [x] Add shared health/profile/error contracts, validated startup configuration, API scripts, and uncached responses
+- [x] Document the native auth error exception and local cookie-jar smoke test
+- [x] Pass all 96 tests, formatting checks, lint, type checks, and build; verify compiled-server health and graceful shutdown
 
 ### You
-- [ ] Sign up with an allowed address and confirm a personal Gmail address is rejected
+- [x] Sign up with an allowed address and confirm a personal Gmail address is rejected
 
 ## Phase 4: Core API
 
 ### Agent
-- [ ] Add Zod request and response schemas in `packages/shared`
-- [ ] Add `GET /api/cities` and `GET /api/categories`
-- [ ] Add insight create, read, edit, and hard delete, with several categories and author-only checks
-- [ ] Add `GET /api/insights`: city and General rules, category, `q`, sorting, `author=me`, pagination
-- [ ] Add the idempotent vote routes, updating the vote row and `upvote_count` in one transaction
-- [ ] Save places through the insight routes, reused by `googlePlaceId`
-- [ ] Add integration tests against real Postgres
+
+#### Contracts and reference data
+
+- [ ] Add core-content Zod request and response schemas in `packages/shared`, following [reference data](api.md#reference-data), [insight response shapes](api.md#insight-response-shapes), and [write validation](api.md#insight-write-validation) (health/profile/error schemas are in place)
+- [ ] Add shared-schema tests for required fields, limits, trimming, nullability, duplicate selections, unknown fields, empty patches, UUID parameters, and feed query validation
+- [ ] Add authenticated `GET /api/cities` and `GET /api/categories` with the specified response shapes and ordering
+
+#### Insight writes and details
+
+- [ ] Add insight creation and detail retrieval through route → service → repository, following the [insight contract](api.md#insights)
+- [ ] Add author-only editing, including omitted-field preservation, optional-value clearing, and whole-list association replacement
+- [ ] Save and reuse ordered place IDs through insight writes, following [Places](api.md#places)
+- [ ] Make insight writes atomic and verify rollback leaves no partial insight, association, or place changes
+- [ ] Add author-only hard deletion and verify join-table/vote cascades, retained place records, and missing-resource behavior
+- [ ] Add real-Postgres tests for CRUD validation, ownership, association replacement, response shapes, and place ordering/reuse
+
+#### Feed and search
+
+- [ ] Add feed filtering for city/General, category, and `author=me`, including their combinations, following [list and search](api.md#get-apiinsights)
+- [ ] Add full-text search with the existing search configuration, query normalization, and specified default/explicit sorting
+- [ ] Add stable pagination, distinct matching totals, empty out-of-range pages, and viewer-specific vote state
+- [ ] Verify feed previews/counts and detail-only fields against the [response shapes](api.md#insight-response-shapes)
+- [ ] Add real-Postgres tests for city versus General browsing/search, combined filters, accent handling, sort ties, duplicate-free items/totals, and pagination
+
+#### Voting
+
+- [ ] Add idempotent vote add/remove routes with transactional vote rows and counts, following [Voting](api.md#voting)
+- [ ] Add real-Postgres tests for repeated and concurrent vote requests, count consistency, self-voting, missing insights, and unchanged insight edit timestamps
+
+#### Verification
+
+- [ ] Verify sessions, mutation Origin checks, shared errors, and `Cache-Control: no-store` across all new endpoints, including failure responses
+- [ ] Run all tests, formatting checks, lint, type checks, and build
+- [ ] Document and run a local API smoke-test sequence covering reference data, create, browse/search, details, edit, voting, ownership rejection, and delete
+- [ ] Reconcile the implemented behavior with the API spec and mark completed Phase 4 steps
 
 ## Phase 5: Frontend
 
@@ -131,6 +169,8 @@ Wireframe differences the agent will handle this way unless you say otherwise:
 ### Agent
 - [ ] Add the API Dockerfile and Render health check configuration
 - [ ] Add the Vercel rewrite from `/api/*` to Render, and send `Cache-Control: no-store` on API responses
+  - API cache headers are in place from Phase 3; verify they survive the rewrite.
+- [ ] Configure and verify trusted proxy handling for the Vercel/Render chain so auth rate limits use the real client IP without trusting client-supplied headers
 - [ ] Connect the API to Supabase through the shared pooler in session mode, with a small connection pool
 - [ ] Document the deploy and migration steps in the README
 

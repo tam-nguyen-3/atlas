@@ -1,6 +1,7 @@
 import { sql, type SQL } from "drizzle-orm";
 import {
   boolean,
+  bigint,
   customType,
   index,
   integer,
@@ -104,6 +105,17 @@ export const verifications = pgTable(
     updatedAt: updatedAt(),
   },
   (table) => [index("verifications_identifier_idx").on(table.identifier)],
+);
+
+export const rateLimits = pgTable(
+  "rate_limits",
+  {
+    id: id(),
+    key: text("key").notNull().unique(),
+    count: integer("count").notNull(),
+    lastRequest: bigint("last_request", { mode: "number" }).notNull(),
+  },
+  (table) => [index("rate_limits_last_request_idx").on(table.lastRequest)],
 );
 
 export const cities = pgTable("cities", {

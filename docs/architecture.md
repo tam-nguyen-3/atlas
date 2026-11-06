@@ -46,9 +46,19 @@ pnpm workspace:
 - The MVP uses email and password through Better Auth.
 - Allow only `minerva.edu` and `uni.minerva.edu` addresses, enforced on the server with an exact, case-insensitive match on the email domain.
 - The MVP sends no email, so it doesn't verify addresses or offer self-serve password reset. The domain check alone doesn't prove someone owns the address.
-- Rate limit sign-up and sign-in.
-- All content routes require a session.
+- Rate limit sign-up and sign-in to three attempts per client IP and route in ten seconds, using Better Auth's database-backed limiter in every environment. Other auth routes use 100 attempts per ten seconds. Add `rate_limits` through the normal Drizzle migrations; Better Auth handles atomic consumption and opportunistic expiry cleanup.
+- The Fastify bridge overwrites `x-atlas-client-ip` with the connection IP. Better Auth trusts only that header. Fastify proxy trust is disabled; Phase 7 must configure and verify the actual Vercel/Render proxy chain before enabling client-IP forwarding. Do not enable unrestricted proxy trust or accept arbitrary forwarded headers.
+- All content routes share a session-protected Fastify route group. Sessions live in Postgres, last seven days by default, and renew daily; cookie caching is disabled. Renewal cookies are forwarded to the browser.
+- State-changing HTTP requests require an exact `WEB_ORIGIN` match, even when signed out. Credentialed CORS permits that origin; preflights are public. Production origins must use HTTPS and cookies are Secure, HttpOnly, and SameSite=Lax.
+- Only email sign-up, email sign-in, sign-out, and session lookup are exposed under `/api/auth/*`. Better Auth retains its native response/error shapes; Atlas endpoints use the shared error envelope. Profile updates go through `/api/me` so other auth routes cannot bypass validation.
+- Sign-up validates the domain and trimmed 1–100 character name before creating a user; user/account/session creation uses a transaction. Cohort and avatar start null, and sign-up cannot set them.
 - Keep the API stateless so it can scale horizontally.
+
+### API runtime
+- The application factory accepts a database and configuration without opening a listening socket. The executable validates environment variables, starts Fastify, and closes requests and the Postgres pool on SIGINT/SIGTERM.
+- Auth secrets must contain at least 32 characters and must not be placeholder values. `BETTER_AUTH_URL` and `WEB_ORIGIN` are exact HTTP(S) origins without paths or trailing slashes. For the production rewrite, both use the public website origin.
+- All API responses send `Cache-Control: no-store`, including auth and errors. `GET /api/health` is a public process health check and does not query the database.
+- Profile requests follow route → service → repository. Shared Zod schemas define their inputs and outputs; content schemas arrive in Phase 4.
 
 ### Automated tests
 - Playwright signs in through the normal form with a seeded test user.

@@ -19,7 +19,9 @@
     "db:generate": "pnpm --filter @atlas/api db:generate",
     "db:migrate": "pnpm --filter @atlas/api db:migrate",
     "db:seed": "pnpm --filter @atlas/api db:seed",
-    "db:seed:test": "pnpm --filter @atlas/api db:seed:test"
+    "db:seed:test": "pnpm --filter @atlas/api db:seed:test",
+    "dev:api": "pnpm --filter @atlas/shared build && pnpm --filter @atlas/api dev",
+    "start:api": "pnpm --filter @atlas/api start"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

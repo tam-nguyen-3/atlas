@@ -1,27 +1,16 @@
-import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { createAuth } from "../auth.js";
 import { eq } from "drizzle-orm";
 import { afterAll, beforeEach, expect, test } from "vitest";
 import { createTestDb, truncateAll } from "../test/database.js";
 import * as schema from "./schema.js";
 import { seedTestUser } from "./seed-test-user.js";
 
-// Proves the schema fits Better Auth. Phase 3 moves this mapping into the real
-// auth config, which also adds the allowed-domain check.
 const { db, pool } = createTestDb();
-
-const auth = betterAuth({
-  baseURL: "http://localhost:3000",
-  secret: "test-secret-with-at-least-32-characters",
-  database: drizzleAdapter(db, { provider: "pg", schema, usePlural: true }),
-  emailAndPassword: { enabled: true },
-  user: {
-    fields: { name: "displayName", image: "avatarUrl" },
-    additionalFields: {
-      cohort: { type: "string", required: false, input: false },
-    },
-  },
-  advanced: { database: { generateId: "uuid" } },
+const auth = createAuth(db, {
+  NODE_ENV: "test",
+  BETTER_AUTH_URL: "http://localhost:3000",
+  BETTER_AUTH_SECRET: "test-secret-with-at-least-32-characters",
+  WEB_ORIGIN: "http://localhost:5173",
 });
 
 const credentials = {
