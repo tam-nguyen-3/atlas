@@ -19,6 +19,12 @@ import { HttpError } from "./errors.js";
 import { createProfileRepository } from "./profile/repository.js";
 import { registerProfileRoutes } from "./profile/routes.js";
 import { createProfileService } from "./profile/service.js";
+import { createReferenceRepository } from "./reference/repository.js";
+import { createReferenceService } from "./reference/service.js";
+import { registerReferenceRoutes } from "./reference/routes.js";
+import { createInsightRepository } from "./insights/repository.js";
+import { createInsightService } from "./insights/service.js";
+import { registerInsightRoutes } from "./insights/routes.js";
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -197,6 +203,14 @@ export function createApp({
       registerProfileRoutes(
         content,
         createProfileService(createProfileRepository(db)),
+      );
+      registerReferenceRoutes(
+        content,
+        createReferenceService(createReferenceRepository(db)),
+      );
+      registerInsightRoutes(
+        content,
+        createInsightService(createInsightRepository(db)),
       );
       await registerContentRoutes?.(content);
     },

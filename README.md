@@ -2,7 +2,7 @@
 
 A knowledge-sharing platform that helps Minerva University students find practical information about their rotation cities.
 
-The database, authentication API, and profile API are in place. Core content routes and the web app arrive in later phases of [docs/plan.md](docs/plan.md).
+The database, authentication, profile, and core content APIs are in place, including insight CRUD, city/category feeds, full-text search, ordered place IDs, and upvotes. The web app arrives in Phase 5 of [docs/plan.md](docs/plan.md).
 
 ## Prerequisites
 
@@ -96,6 +96,20 @@ Expect 200 from health and valid auth/profile requests; Gmail sign-up returns 40
 
 Sign-up and sign-in each allow three attempts per IP per ten seconds, including invalid input. If a request returns 429, wait the `X-Retry-After` seconds before retrying. All writes require the exact Origin header, including curl requests. Auth routes keep Better Auth's native errors; other endpoints use `{ error: { code, message, details? } }`.
 
+### Local core API smoke test
+
+With local Postgres running, run:
+
+```bash
+pnpm smoke:api
+```
+
+The script starts a real HTTP listener on an available loopback port and uses `TEST_DATABASE_URL` (default: local `atlas_test`). It refuses any database not named `atlas_test`, applies existing migrations and reference seeds, and creates two temporary users through normal sign-up. It does not read `.env` or use `DATABASE_URL`. Run it separately from the test suite, which rebuilds the same database.
+
+The sequence checks health and profiles, fetches cities/categories, creates a Tokyo insight with a place ID, browses and searches for it with `cafe` matching `café`, reads details as the second user, edits the insight into General, adds an idempotent upvote and removes it, rejects the second user's edit/delete with 403, and deletes the insight as its author. Creation must return 201, deletion 204, and retrieval after deletion 404; successful reads, edits, and votes return 200. Every response must use `Cache-Control: no-store`.
+
+A successful run prints `HTTP smoke passed`. The script closes its listener and removes its temporary users, insights, and places even after an assertion failure; reference seeds and normal auth rate-limit counters remain. Existing local rate limits may briefly delay sign-up. This sequence passed locally on 2026-11-06, alongside all 168 tests and formatting, lint, type checks, and build.
+
 ## Scripts
 
 Run these from the repo root.
@@ -107,6 +121,7 @@ Run these from the repo root.
 | `pnpm format:check` | Check formatting without changing files                                                                          |
 | `pnpm typecheck`    | Type check all packages and tests                                                                                |
 | `pnpm test`         | Run all tests with Vitest (needs Postgres running)                                                               |
+| `pnpm smoke:api`    | Run the two-user HTTP smoke sequence against `atlas_test`, then clean up its temporary content                   |
 | `pnpm build`        | Build all packages                                                                                               |
 | `pnpm dev:api`      | Build shared contracts and start the API with file watching                                                      |
 | `pnpm start:api`    | Run the compiled API (run `pnpm build` first)                                                                    |

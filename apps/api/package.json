@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "smoke": "tsx src/test/smoke.ts",
     "build": "tsc -b",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx --env-file-if-exists=../../.env src/db/migrate.ts",

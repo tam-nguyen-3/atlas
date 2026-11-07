@@ -8,6 +8,7 @@
     "node": ">=24.20.0 <25"
   },
   "scripts": {
+    "smoke:api": "pnpm --filter @atlas/shared build && pnpm --filter @atlas/api smoke",
     "lint": "tsc -b && eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

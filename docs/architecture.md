@@ -58,7 +58,7 @@ pnpm workspace:
 - The application factory accepts a database and configuration without opening a listening socket. The executable validates environment variables, starts Fastify, and closes requests and the Postgres pool on SIGINT/SIGTERM.
 - Auth secrets must contain at least 32 characters and must not be placeholder values. `BETTER_AUTH_URL` and `WEB_ORIGIN` are exact HTTP(S) origins without paths or trailing slashes. For the production rewrite, both use the public website origin.
 - All API responses send `Cache-Control: no-store`, including auth and errors. `GET /api/health` is a public process health check and does not query the database.
-- Profile requests follow route → service → repository. Shared Zod schemas define their inputs and outputs; content schemas arrive in Phase 4.
+- Profile, reference-data, and insight requests follow route → service → repository. Shared Zod schemas define request and response contracts. Insight writes are transactional; edits, deletes, and votes lock the insight row. Feed/detail reads use repeatable-read snapshots, and association filters use EXISTS to avoid duplicate insights and totals.
 
 ### Automated tests
 - Playwright signs in through the normal form with a seeded test user.

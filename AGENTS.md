@@ -4,7 +4,7 @@ This file provides project guidance to Codex and other coding agents working in 
 
 ## Current state
 
-Minerva Atlas is a sign-in-only knowledge-sharing platform for Minerva University students, organised around rotation cities. Phases 1–3 of `docs/plan.md` are in place: the database, Fastify server, Better Auth integration, and profile API are in `apps/api`. Core content routes and the web app arrive in later phases.
+Minerva Atlas is a sign-in-only knowledge-sharing platform for Minerva University students, organised around rotation cities. Phases 1–4 of `docs/plan.md` are in place: the database, Fastify server, Better Auth integration, profile, reference data, insight CRUD/search, and voting APIs are in `apps/api`. The web app arrives in Phase 5.
 
 ## Commands
 
@@ -23,6 +23,7 @@ pnpm lint                                 # Builds declarations, then runs type-
 pnpm format                               # Prettier (skips docs/, AGENTS.md, and CLAUDE.md); format:check only checks
 pnpm typecheck                            # Type checks all packages and tests
 pnpm test                                 # All tests
+pnpm smoke:api                            # Two-user HTTP smoke test against atlas_test; cleans up its content
 pnpm test --project api                   # One project: shared, api, or web
 pnpm test apps/api/src/database.test.ts   # One test file
 pnpm build                                # Builds all packages

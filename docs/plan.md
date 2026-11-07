@@ -73,7 +73,7 @@ Completed locally on `main` in commit `1278be6`.
 
 ## Phase 3: Authentication
 
-Completed locally, with manual Postman verification confirmed on 2026-11-06. Next up is Phase 4: Core API. Better Auth keeps its native error format under `/api/auth/*`; Atlas routes use the shared error envelope. The frontend remains in Phase 5.
+Completed locally, with manual Postman verification confirmed on 2026-11-06. Better Auth keeps its native error format under `/api/auth/*`; Atlas routes use the shared error envelope. The frontend remains in Phase 5.
 
 ### Agent
 - [x] Set up Fastify with `fastify-type-provider-zod`, the shared error shape, and `GET /api/health`
@@ -91,42 +91,44 @@ Completed locally, with manual Postman verification confirmed on 2026-11-06. Nex
 
 ## Phase 4: Core API
 
+Completed locally on 2026-11-06. All 168 tests, formatting, lint, type checks, and build passed, along with the two-user HTTP sequence documented in the README (`pnpm smoke:api`). No schema migration or API scope change was needed. Next up is Phase 5: Frontend.
+
 ### Agent
 
 #### Contracts and reference data
 
-- [ ] Add core-content Zod request and response schemas in `packages/shared`, following [reference data](api.md#reference-data), [insight response shapes](api.md#insight-response-shapes), and [write validation](api.md#insight-write-validation) (health/profile/error schemas are in place)
-- [ ] Add shared-schema tests for required fields, limits, trimming, nullability, duplicate selections, unknown fields, empty patches, UUID parameters, and feed query validation
-- [ ] Add authenticated `GET /api/cities` and `GET /api/categories` with the specified response shapes and ordering
+- [x] Add core-content Zod request and response schemas in `packages/shared`, following [reference data](api.md#reference-data), [insight response shapes](api.md#insight-response-shapes), and [write validation](api.md#insight-write-validation) (health/profile/error schemas are in place)
+- [x] Add shared-schema tests for required fields, limits, trimming, nullability, duplicate selections, unknown fields, empty patches, UUID parameters, and feed query validation
+- [x] Add authenticated `GET /api/cities` and `GET /api/categories` with the specified response shapes and ordering
 
 #### Insight writes and details
 
-- [ ] Add insight creation and detail retrieval through route → service → repository, following the [insight contract](api.md#insights)
-- [ ] Add author-only editing, including omitted-field preservation, optional-value clearing, and whole-list association replacement
-- [ ] Save and reuse ordered place IDs through insight writes, following [Places](api.md#places)
-- [ ] Make insight writes atomic and verify rollback leaves no partial insight, association, or place changes
-- [ ] Add author-only hard deletion and verify join-table/vote cascades, retained place records, and missing-resource behavior
-- [ ] Add real-Postgres tests for CRUD validation, ownership, association replacement, response shapes, and place ordering/reuse
+- [x] Add insight creation and detail retrieval through route → service → repository, following the [insight contract](api.md#insights)
+- [x] Add author-only editing, including omitted-field preservation, optional-value clearing, and whole-list association replacement
+- [x] Save and reuse ordered place IDs through insight writes, following [Places](api.md#places)
+- [x] Make insight writes atomic and verify rollback leaves no partial insight, association, or place changes
+- [x] Add author-only hard deletion and verify join-table/vote cascades, retained place records, and missing-resource behavior
+- [x] Add real-Postgres tests for CRUD validation, ownership, association replacement, response shapes, and place ordering/reuse
 
 #### Feed and search
 
-- [ ] Add feed filtering for city/General, category, and `author=me`, including their combinations, following [list and search](api.md#get-apiinsights)
-- [ ] Add full-text search with the existing search configuration, query normalization, and specified default/explicit sorting
-- [ ] Add stable pagination, distinct matching totals, empty out-of-range pages, and viewer-specific vote state
-- [ ] Verify feed previews/counts and detail-only fields against the [response shapes](api.md#insight-response-shapes)
-- [ ] Add real-Postgres tests for city versus General browsing/search, combined filters, accent handling, sort ties, duplicate-free items/totals, and pagination
+- [x] Add feed filtering for city/General, category, and `author=me`, including their combinations, following [list and search](api.md#get-apiinsights)
+- [x] Add full-text search with the existing search configuration, query normalization, and specified default/explicit sorting
+- [x] Add stable pagination, distinct matching totals, empty out-of-range pages, and viewer-specific vote state
+- [x] Verify feed previews/counts and detail-only fields against the [response shapes](api.md#insight-response-shapes)
+- [x] Add real-Postgres tests for city versus General browsing/search, combined filters, accent handling, sort ties, duplicate-free items/totals, and pagination
 
 #### Voting
 
-- [ ] Add idempotent vote add/remove routes with transactional vote rows and counts, following [Voting](api.md#voting)
-- [ ] Add real-Postgres tests for repeated and concurrent vote requests, count consistency, self-voting, missing insights, and unchanged insight edit timestamps
+- [x] Add idempotent vote add/remove routes with transactional vote rows and counts, following [Voting](api.md#voting)
+- [x] Add real-Postgres tests for repeated and concurrent vote requests, count consistency, self-voting, missing insights, and unchanged insight edit timestamps
 
 #### Verification
 
-- [ ] Verify sessions, mutation Origin checks, shared errors, and `Cache-Control: no-store` across all new endpoints, including failure responses
-- [ ] Run all tests, formatting checks, lint, type checks, and build
-- [ ] Document and run a local API smoke-test sequence covering reference data, create, browse/search, details, edit, voting, ownership rejection, and delete
-- [ ] Reconcile the implemented behavior with the API spec and mark completed Phase 4 steps
+- [x] Verify sessions, mutation Origin checks, shared errors, and `Cache-Control: no-store` across all new endpoints, including failure responses
+- [x] Run all tests, formatting checks, lint, type checks, and build
+- [x] Document and run a local API smoke-test sequence covering reference data, create, browse/search, details, edit, voting, ownership rejection, and delete
+- [x] Reconcile the implemented behavior with the API spec and mark completed Phase 4 steps
 
 ## Phase 5: Frontend
 
