@@ -2,7 +2,7 @@
 
 A knowledge-sharing platform that helps Minerva University students find practical information about their rotation cities.
 
-The database, authentication, profile, and core content APIs are in place, including insight CRUD, city/category feeds, full-text search, ordered place IDs, and upvotes. The web app arrives in Phase 5 of [docs/plan.md](docs/plan.md).
+The database, authentication, profile, and core content APIs are in place, including insight CRUD, city/category feeds, full-text search, ordered place IDs, and upvotes. The frontend includes email/password authentication, protected navigation, live feed browsing/search, shareable insight dialogs, and upvotes. Contribution and profile editing are the next frontend slice in [docs/plan.md](docs/plan.md).
 
 ## Prerequisites
 
@@ -60,7 +60,7 @@ For a compiled run, use `pnpm build`, then `pnpm start:api`. The API listens on 
 
 ### Local auth smoke test
 
-The frontend arrives in Phase 5. For now, use a cookie jar and the configured Origin header. These requests create a real account in your local development database; choose an unused allowed email for each sign-up. The example password is for local testing only.
+For a direct API check, use a cookie jar and the configured Origin header. These requests create a real account in your local development database; choose an unused allowed email for each sign-up. The example password is for local testing only.
 
 ```bash
 curl -i http://localhost:3000/api/health
@@ -167,3 +167,84 @@ docker compose down -v && pnpm db:up
 - [API](docs/api.md): REST contract
 - [Schema](docs/schema.md): tables and seed data
 - [Plan](docs/plan.md): work tracker
+
+## Running the web app
+
+Start the API and web app in separate terminals:
+
+```bash
+pnpm dev:api
+```
+
+```bash
+pnpm dev:web
+```
+
+Open http://localhost:5173 and create an account with a `minerva.edu` or
+`uni.minerva.edu` address, or sign in to an existing local account. Sign-up
+creates a session immediately. The MVP sends no verification email and has no
+password-reset flow. Local development uses `atlas_dev`; the automated test
+user is confined to `atlas_test`.
+
+Vite proxies `/api` to localhost:3000 without rewriting the browser Origin.
+Keep `WEB_ORIGIN=http://localhost:5173`; the strict port prevents silent origin
+changes. The web app does not load repository-root secrets into its browser
+configuration. Better Auth's browser client uses same-origin `/api/auth`, and
+Atlas requests use `/api/me`, reference-data routes, and insight/vote routes with cookies.
+There is no browser API-origin variable or token in localStorage.
+
+The authenticated shell loads real cities and categories. General is a local
+option, not a city record. A valid URL city wins over the remembered city;
+only explicit city selections change the preference. Browse supports search,
+category filtering, sorting, and numbered pagination (20 insights per page).
+Feed filters stay in the URL; adding `insight=<uuid>` opens a shareable detail
+dialog while preserving the feed. Upvotes stay synchronized between both views.
+Google lookups remain in Phase 6; this slice shows place counts only. Contributions
+remain unavailable; Discover, Agent, and profile editing remain placeholders.
+The earlier fixture feed is not imported into development or production.
+
+`pnpm build` produces the web bundle in `apps/web/dist` and declarations in
+`apps/web/.types`. `pnpm preview:web` serves the production bundle on
+http://localhost:4173. To authenticate there, restart the local API with
+`WEB_ORIGIN=http://localhost:4173 pnpm dev:api` so its mutation Origin check
+matches the preview. Restart with the normal origin when returning to development.
+Deployment and the Vercel-to-Render rewrite remain Phase 7.
+
+Visual tokens and shared interaction conventions live in [DESIGN.md](DESIGN.md).
+
+## Browser tests
+
+Install Chromium once:
+
+```bash
+pnpm --filter @atlas/web exec playwright install chromium
+```
+
+With local Postgres running, run API tests first, then browser tests:
+
+```bash
+pnpm test
+pnpm test:web:browser
+```
+
+Do not run these commands concurrently: both rebuild the shared `atlas_test`
+database. CI preserves this ordering. Browser tests run a freshly migrated and
+seeded database for each of the development and production-preview suites,
+sequentially with one worker. They generate temporary credentials and an auth
+secret in memory, sign in through the normal form, and require no changes to
+`.env` or `TEST_USER_PASSWORD`.
+
+The isolated API uses localhost:3100 and the test web origin is
+http://localhost:5174. Existing servers are never reused. The runner overrides the
+API database/auth configuration, verifies the actual database name before
+resetting it, and uses test-only process commands to reset rate-limit counters
+between scenarios and revoke sessions. No test-only HTTP endpoints are added.
+Server processes shut down after the suites. For a non-default test database,
+export `TEST_DATABASE_URL` before running; its database name must be `atlas_test`.
+The browser workflow follows the API tests' environment convention rather than
+loading the repository-root `.env`.
+
+Screenshots and failure traces are written under `apps/web/test-results/`.
+Coverage includes auth validation and recovery, rate limits, revocation,
+redirect safety, session isolation, city preference/history, keyboard/focus,
+responsive layout, accessibility, and production fixture exclusion.

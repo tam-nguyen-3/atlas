@@ -51,6 +51,7 @@ pnpm workspace:
 - All content routes share a session-protected Fastify route group. Sessions live in Postgres, last seven days by default, and renew daily; cookie caching is disabled. Renewal cookies are forwarded to the browser.
 - State-changing HTTP requests require an exact `WEB_ORIGIN` match, even when signed out. Credentialed CORS permits that origin; preflights are public. Production origins must use HTTPS and cookies are Secure, HttpOnly, and SameSite=Lax.
 - Only email sign-up, email sign-in, sign-out, and session lookup are exposed under `/api/auth/*`. Better Auth retains its native response/error shapes; Atlas endpoints use the shared error envelope. Profile updates go through `/api/me` so other auth routes cannot bypass validation.
+- The frontend uses custom Atlas auth forms and Better Auth's official client behind an auth adapter, with the client version matching the backend. Atlas endpoints use a separate typed client with shared Zod contracts. The `/api/me` query owns frontend session/profile state; do not introduce a competing `useSession` cache. Both clients use same-origin `/api` cookie requests.
 - Sign-up validates the domain and trimmed 1–100 character name before creating a user; user/account/session creation uses a transaction. Cohort and avatar start null, and sign-up cannot set them.
 - Keep the API stateless so it can scale horizontally.
 

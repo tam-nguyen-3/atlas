@@ -4,11 +4,25 @@ This file provides project guidance to Codex and other coding agents working in 
 
 ## Current state
 
-Minerva Atlas is a sign-in-only knowledge-sharing platform for Minerva University students, organised around rotation cities. Phases 1–4 of `docs/plan.md` are in place: the database, Fastify server, Better Auth integration, profile, reference data, insight CRUD/search, and voting APIs are in `apps/api`. The web app arrives in Phase 5.
+Minerva Atlas is a sign-in-only knowledge-sharing platform for Minerva University students, organised around rotation cities. The database and core APIs are implemented, along with frontend authentication, protected navigation, browsing/search, insight details, and upvotes. See [docs/plan.md](docs/plan.md) for current progress and remaining work.
+
+## Navigation
+
+Before editing `apps/api` or `apps/web`, read the relevant package guide: [API](apps/api/AGENTS.md) or [web](apps/web/AGENTS.md). These supplement the repository-wide rules below.
+
+| Working on | Start with |
+|---|---|
+| Browse filters and URL state | `apps/web/src/lib/browse-state.ts` |
+| Feed/detail queries and voting | `apps/web/src/lib/insights.ts` |
+| Frontend session handling | `apps/web/src/lib/session.ts` |
+| API insight behavior | `apps/api/src/insights/` |
+| Request/response contracts | `packages/shared/src/` |
+| Database changes | `apps/api/src/db/schema.ts` and `apps/api/drizzle/` |
+| Visual and interaction conventions | [DESIGN.md](DESIGN.md) |
 
 ## Commands
 
-Run from the repo root. Tests need Postgres running.
+Run from the repo root. API and browser tests need Postgres running. Run API tests, `pnpm smoke:api`, and browser tests sequentially: they share `atlas_test`, and both test suites rebuild its schema.
 
 ```bash
 pnpm db:up                                # Start local Postgres (atlas_dev, atlas_test)
@@ -19,10 +33,13 @@ pnpm db:seed                              # Seed cities and categories in DATABA
 pnpm db:seed:test                         # Seed the test user; requires NODE_ENV=test and atlas_test
 pnpm dev:api                              # Build shared contracts and start the API watcher
 pnpm start:api                            # Run the compiled API after pnpm build
+pnpm dev:web                              # Build shared contracts and start Vite
+pnpm preview:web                          # Serve the web production bundle after pnpm build
 pnpm lint                                 # Builds declarations, then runs type-aware ESLint
 pnpm format                               # Prettier (skips docs/, AGENTS.md, and CLAUDE.md); format:check only checks
 pnpm typecheck                            # Type checks all packages and tests
-pnpm test                                 # All tests
+pnpm test                                 # All Vitest tests (browser tests are separate)
+pnpm test:web:browser                     # Build, then run development and production-preview browser tests
 pnpm smoke:api                            # Two-user HTTP smoke test against atlas_test; cleans up its content
 pnpm test --project api                   # One project: shared, api, or web
 pnpm test apps/api/src/database.test.ts   # One test file
@@ -39,6 +56,7 @@ pnpm build                                # Builds all packages
 | `docs/schema.md` | Tables, indexes, seed cities and categories |
 | `docs/plan.md` | Phased work tracker, including the wireframe differences already decided |
 | `docs/design/` | Wireframes (PNG) |
+| [DESIGN.md](DESIGN.md) | Visual tokens, shared components, and interaction conventions |
 
 - Written specs win where the wireframes differ. Some wireframes show features that are out of scope, such as media, replies, and the Discover map.
 - Screens with no wireframe (sign-up, sign-in, profile, "my insights", edit, delete) follow the existing wireframe style.
@@ -46,7 +64,7 @@ pnpm build                                # Builds all packages
 - Tick a plan box when its step is done. If a decision changes the scope, update the affected spec too.
 - Free-tier limits and Google terms in `docs/architecture.md` were checked on 2026-11-04 and can change. Check them again before relying on them.
 
-## Planned architecture
+## Architecture
 
 A pnpm workspace: `apps/web` (React, Vite), `apps/api` (Fastify), and `packages/shared` (Zod request and response schemas used by both).
 

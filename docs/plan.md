@@ -132,19 +132,85 @@ Completed locally on 2026-11-06. All 168 tests, formatting, lint, type checks, a
 
 ## Phase 5: Frontend
 
+### Agreed behavior
+
+- **Visuals:** polished, light-theme screens that preserve the wireframes' sparse layout and hierarchy, with desktop and mobile layouts. The Phase 0 wireframe differences still apply.
+- **Accent:** use `#F0B91E` as the brand accent, with dark text on gold-filled controls. Build a restrained supporting palette around white/light neutral surfaces and charcoal text; use an accessible darker gold for text links and indicators where the accent lacks contrast. Keep warning and error states distinct from the brand accent. Review the supporting palette in the first shell/feed review before applying it across the remaining screens.
+- **City selection:** remember the last explicitly selected city, including General, in `localStorage`. An explicit URL city takes precedence; otherwise restore a valid saved city or fall back to San Francisco. Storage failures must not block browsing. Cookies are unnecessary because the server does not use this preference.
+- **Feed:** numbered pagination, 20 insights per page. Keep city, committed search, category, sort, and page in validated URL parameters. Reset pagination when filters change.
+- **Details:** shareable modal URLs preserve the underlying feed. Refresh and direct links reopen the insight; Back closes a modal opened from the feed. Narrow screens use a full-height dialog.
+- **Forms:** create and edit use the same responsive modal form. Successful creation returns to the originating feed with its filters preserved, refreshes results, and shows a success message with a "View insight" link. Successful editing returns to the updated detail view.
+- **Deletion:** confirm permanent deletion in an accessible dialog, then return to the originating list and correct pagination if needed.
+- **Places boundary:** Google autocomplete and live place cards remain in Phase 6. Phase 5 needs no Google key, shows existing place counts, and preserves saved place associations during editing.
+- **Defaults:** English UI, no dark mode, no persistent drafts or offline writes. No API contract or database changes are required for Phase 5.
+
+Foundation/design, API/authentication, and Browse/details are implemented. Development and production use live feed/search, shareable insight dialogs, and synchronized upvotes. Contribution and profile editing are next. See [foundation verification](design/foundation-verification.md), [authentication verification](design/authentication-verification.md), and [browse verification](design/browse-verification.md) for checks and design-audit limitations. User visual review remains pending.
+
 ### Agent
-- [ ] Set up Vite, React, TanStack Router and Query, Tailwind, and shadcn/ui
-- [ ] Add the API client and app shell, with "Agent" and "Discover" nav items linking to empty placeholders
-- [ ] Build sign-up and sign-in, including the rejected-domain state
-- [ ] Build city selection, including General
-- [ ] Build the feed: browse, search, category filter, sort, pagination
-- [ ] Build insight details with upvoting
-- [ ] Build create and edit with React Hook Form and multi-select categories, plus delete confirmation
-- [ ] Build the profile (display name, cohort) and "my insights" views
-- [ ] Add Playwright tests for the core flows, signing in with the seeded test user
+
+#### Foundation and design
+
+- [x] Configure Vite, React, TanStack Router and Query, Tailwind, shadcn/ui, React Hook Form, and development scripts
+- [x] Use the frontend design skills to establish shared visual tokens and reusable controls around the agreed gold accent; record the visual and interaction conventions during implementation and verify contrast for text, controls, and focus states
+- [x] Build the responsive app shell, city switcher with General and remembered selection, and navigation, with "Agent" and "Discover" linking to empty placeholders
+
+#### API and authentication
+
+Completed locally on 2026-11-06: 209 tests and 46 browser checks passed (23 each against development and production preview), along with formatting, lint, type checks, and build. See [verification notes](design/authentication-verification.md) for design-audit limitations.
+
+This slice ends with working authentication and a live shell using real cities/categories. Feed browsing, insight details, contribution, and profile editing stay in the following slices. Preserve the existing foundation and its visual conventions.
+
+- [x] Install and read the relevant official [Better Auth skills](https://github.com/better-auth/skills): best practices, create-auth, and email/password guidance (local Codex installation; other contributors install separately). Atlas specs take precedence over generic skill defaults such as email verification and password reset.
+- [x] Add a same-origin `/api` client for Atlas endpoints, using cookie credentials, shared Zod contracts for runtime response validation, and request cancellation; start with profile, cities, and categories, adding insight methods with their UI slices
+- [x] Add Better Auth's official client behind a dedicated auth adapter for `signUp.email`, `signIn.email`, and `signOut`, matching the backend's resolved package version and checking version-matched types/source alongside the official client documentation; keep auth calls on same-origin `/api/auth` and do not import server implementation into the browser
+- [x] Normalize Atlas errors separately from Better Auth's native errors, including message-only rate limits and `X-Retry-After`; distinguish network/server failures from invalid sessions, and do not automatically retry credential submissions or sign-out
+- [x] Use the shared-contract `GET /api/me` query as the authoritative frontend session/profile state; refresh it after authentication and on protected navigation, focus, and reconnect, without a competing `useSession` cache
+- [x] Build custom `/sign-in` and `/sign-up` screens using the existing Atlas controls and design tokens, rather than adding Better Auth UI; sign-up collects name, university email, password, and confirmation, sending only `name`, `email`, and `password`
+- [x] Match the existing name/domain/password rules, preserve entered values in memory after failures, prevent duplicate submissions, and support inline errors, first-invalid-field focus, password visibility, autofill, and paste; keep the default seven-day session with no Remember me option
+- [x] Protect Browse, Discover, Agent, and Profile before rendering content; preserve the requested internal path, query, and hash through sign-in/sign-up, reject external return destinations and auth loops, and default to `/browse`
+- [x] Add signed-in identity and sign-out to desktop/mobile navigation; report sign-out success only after server confirmation, and offer retry on failure
+- [x] On protected-request 401 or successful sign-out, cancel requests and clear query/mutation data, preventing late responses from restoring the previous user's data; retain the city preference, and do not treat credential rejection, 403, or server unavailability as session loss
+- [x] Replace the runtime static preview with an authenticated live shell in development and production; fetch real cities/categories, add client-only General, preserve agreed city precedence/storage behavior, and show loading/retry states plus an honest browse placeholder until the feed slice
+- [x] Cover rejected domains, duplicate accounts, invalid credentials, rate-limit recovery, session expiry, unavailable-server recovery, safe return destinations, and user-to-user cache isolation with focused frontend tests
+- [x] Extend Playwright to use a dedicated test API and freshly rebuilt/migrated/seeded `atlas_test`, sequentially after API tests; sign in through the normal form and adapt existing shell/city tests to real reference data, including production fixture exclusion
+- [x] Verify desktop/mobile keyboard and focus behavior, accessibility, auth success/failure/refresh/sign-out/session-revocation flows, and network recovery; run formatting checks, lint, type checks, tests, browser tests, and build
+- [x] Update `DESIGN.md` with auth/error conventions and README with the real-API browser-test workflow; mark this slice complete only after verification, leaving user visual review unchecked
+
+#### Browse and details
+
+Completed locally on 2026-11-07: all 233 tests and 68 browser checks passed (34 each against development and production preview), along with formatting, lint, type checks, and build. See [verification notes](design/browse-verification.md) for behavior, checks, and design-audit limits. Contribution/profile work and Google lookups remain in their following slices; user visual review stays pending.
+
+- [x] Extend the API client with shared-schema feed, detail, and vote methods, cancellation, and existing session/error handling
+- [x] Validate city, search, category, sort, page, and insight URL state; preserve city precedence/storage and normalize invalid values
+- [x] Enable 300 ms debounced search with immediate Enter/clear, IME safety, literal query text, superseded-request cancellation, and Back/Forward synchronization
+- [x] Add single-category filtering and sort controls behind the filter icon; use relevance with search and newest without it, removing relevance when search clears
+- [x] Render responsive feed rows with optional titles, previews, author/cohort, categories, cities/General, dates, place counts, and voting
+- [x] Add numbered pagination at 20 items per page, totals/current-page feedback, filter-change resets, and out-of-range correction
+- [x] Follow API scope: city browsing excludes General, city search includes General, and General always includes only cityless insights
+- [x] Open shareable `/browse?...&insight=<id>` dialogs with preserved feed filters/scroll, refresh/direct-entry support, safe close, and Back/Forward behavior
+- [x] Build accessible desktop/mobile dialogs with full body formatting, metadata, safe source links, loading/retry/not-found states, and focus trapping/restoration
+- [x] Synchronize server-confirmed votes across feed/detail caches, prevent overlapping submissions, refresh affected lists, and offer retry after failures
+- [x] Verify loading, empty/no-results, long-content, keyboard/focus, mobile, and accessibility states with focused tests and real-API Playwright flows
+- [x] Run formatting, lint, type checks, tests, browser checks, and build; update verification notes and DESIGN.md while leaving user visual review unchecked
+
+#### Contribution and profile
+
+- [ ] Build the shared create/edit form with validation, required multi-category selection, multi-city selection, optional-field clearing, and preservation of saved place associations
+- [ ] Implement the agreed create/edit success destinations and feedback, plus accessible permanent-delete confirmation and list pagination correction
+- [ ] Warn before discarding unsaved changes, preserve entered values after failures, and prevent duplicate submissions
+- [ ] Build profile editing (display name and cohort) and "my insights" across all cities by default
+
+#### Verification
+
+- [ ] Add focused frontend tests and Playwright flows against the real test API and Postgres, signing in through the normal form with the seeded test user
+- [ ] Run browser tests sequentially after API tests; rebuild and seed the test database before browser tests so they cannot overlap API tests that rebuild the shared database
+- [ ] Cover authentication, remembered city and URL precedence, search scope, pagination, modal refresh/Back, CRUD, ownership, voting, profile, and session expiry
+- [ ] Verify loading, empty, no-results, retry, keyboard/focus, long-content, and mobile states; target WCAG 2.2 AA
+- [ ] Run formatting checks, lint, type checks, tests, and build
 
 ### You
-- [ ] Review the screens against your wireframes and give feedback
+- [ ] Review the app shell and feed early against the wireframes, including the gold accent, supporting palette, typography, and responsive layout
+- [ ] Review all completed flows on desktop and mobile, including screens without wireframes, and give feedback
 
 ## Phase 6: Google Places
 
