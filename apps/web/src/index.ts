@@ -1,4 +1,4 @@
 import { APP_NAME } from "@atlas/shared";
 
-// Placeholder until Vite and React are set up in Phase 5.
+// Shared application identity used by the web package.
 export const PAGE_TITLE = APP_NAME;

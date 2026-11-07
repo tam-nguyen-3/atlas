@@ -12,7 +12,7 @@
     "lint": "tsc -b && eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc -b && tsc -p tsconfig.test.json",
+    "typecheck": "tsc -b && tsc -p tsconfig.test.json && tsc -p apps/web/tsconfig.test.json",
     "test": "vitest run",
     "build": "pnpm -r run build",
     "db:up": "docker compose up -d --wait",
@@ -22,7 +22,10 @@
     "db:seed": "pnpm --filter @atlas/api db:seed",
     "db:seed:test": "pnpm --filter @atlas/api db:seed:test",
     "dev:api": "pnpm --filter @atlas/shared build && pnpm --filter @atlas/api dev",
-    "start:api": "pnpm --filter @atlas/api start"
+    "start:api": "pnpm --filter @atlas/api start",
+    "dev:web": "pnpm --filter @atlas/shared build && pnpm --filter @atlas/web dev",
+    "preview:web": "pnpm --filter @atlas/web preview",
+    "test:web:browser": "pnpm build && pnpm --filter @atlas/api exec tsx src/test/run-browser.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

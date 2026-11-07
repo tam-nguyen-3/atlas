@@ -12,8 +12,15 @@
     "vitest.config.ts"
   ],
   "references": [
-    { "path": "packages/shared" },
-    { "path": "apps/api" },
-    { "path": "apps/web" }
-  ]
+    {
+      "path": "packages/shared"
+    },
+    {
+      "path": "apps/api"
+    },
+    {
+      "path": "apps/web"
+    }
+  ],
+  "exclude": ["apps/web"]
 }

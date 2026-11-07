@@ -49,3 +49,7 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
+
+      # Browser checks rebuild/seed atlas_test; always run after API tests.
+      - run: pnpm --filter @atlas/web exec playwright install --with-deps chromium
+      - run: pnpm test:web:browser

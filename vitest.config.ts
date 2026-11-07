@@ -4,6 +4,7 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   resolve: {
     alias: {
+      "@": fileURLToPath(new URL("apps/web/src", import.meta.url)),
       // Resolve to source so tests don't need a build first.
       "@atlas/shared": fileURLToPath(
         new URL("packages/shared/src/index.ts", import.meta.url),
@@ -36,7 +37,8 @@ export default defineConfig({
         test: {
           name: "web",
           root: "apps/web",
-          include: ["src/**/*.test.ts"],
+          environment: "jsdom",
+          include: ["src/**/*.test.{ts,tsx}"],
         },
       },
     ],
