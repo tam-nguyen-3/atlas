@@ -40,9 +40,7 @@ export function InsightActions({ insight }: { insight: Insight }) {
         <Button
           variant="ghost"
           busy={mutation.pending}
-          aria-label={
-            insight.viewerHasUpvoted ? "Remove upvote" : "Upvote insight"
-          }
+          aria-label={`${insight.viewerHasUpvoted ? "Remove upvote" : "Upvote insight"}, ${insight.upvoteCount.toLocaleString("en")} upvotes`}
           aria-pressed={insight.viewerHasUpvoted}
           onClick={() => mutation.vote(!insight.viewerHasUpvoted)}
         >

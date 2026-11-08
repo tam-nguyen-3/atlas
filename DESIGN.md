@@ -58,7 +58,7 @@ The city heading anchors each view. Search and categories lead into flat feed ro
 
 ## Elevation & Depth
 
-Static content stays flat. Select popups and the mobile floating action may use a restrained shadow. Layer tokens: dropdown 200, backdrop 500, navigation sheet 700, nested account menu 710. The account menu portals above the sheet and stays within viewport bounds. Portal overlays avoid clipping.
+Static content stays flat. Select popups and the mobile floating action may use a restrained shadow. Layer tokens: dropdown 200, backdrop 500, navigation sheet 700, nested account/insight menu 710, editor backdrop/dialog 720/730, confirmation backdrop/dialog 740/750. The account menu portals above the sheet and stays within viewport bounds. Portal overlays avoid clipping.
 
 ## Shapes
 
@@ -88,6 +88,24 @@ Existing `docs/product.md` and Phase 5 agreed behavior in `docs/plan.md` remain 
 `/api/me` is the single session/profile query. Protected content waits for confirmation. Atlas and native auth failures have separate transport parsers; only a protected 401 establishes session loss. Unavailability has an inline retry state. An accepted sign-in/sign-up followed by unavailable session verification offers **Retry session check** without resending credentials. Auth rate limits show a retry countdown. Sign-out is pessimistic: success requires server confirmation; failure keeps identity and offers **Retry sign out**. Session loss or identity change cancels requests and clears private query/mutation/route caches while retaining the city preference.
 
 Shared owners added for this flow: `components/ui/password-input.tsx` (masked input and visibility), `components/ui/request-state.tsx` (loading/error/retry and rate-limit delay), `lib/errors.ts` (transport error messages), and `lib/session.ts` (session/cache lifecycle). The current auth and shell use inline feedback; no toast system is introduced. The existing product/API specs and Phase 5 tracker continue to own workflow policy; no additional UX-contract document duplicates them.
+
+## Contribution and profile
+
+Insight actions use the shared shadcn/Radix dropdown owner in `components/ui/dropdown-menu.tsx`, with `components/insight-menu.tsx` reused across feed rows, insight details, and My insights. Existing tokens and flat feed layouts remain canonical.
+
+- Place a horizontal three-dot (`⋯`) button at the top right of each insight header. Keep it visible on desktop and mobile, with a minimum 44px touch target, an accessible name such as "Insight actions", and visible keyboard focus.
+- Everyone signed in sees **Copy link**. When the insight belongs to the logged-in user, append **Edit** and **Delete**, in that order. Separate Delete from the safe actions and use the danger token. The server continues to enforce author-only writes.
+- Opening or using the menu must not open the underlying insight row. Support keyboard navigation, Escape, and focus restoration; keep the popup within the viewport and operable inside the detail dialog.
+- Copy link copies an absolute shareable insight-detail URL using the supported Browse dialog route. Announce success only after the clipboard write succeeds; if copying fails, show actionable feedback with a selectable link. Shared links retain the existing sign-in requirement.
+- Edit opens the shared prefilled form and follows the agreed edit success destination. Delete opens the accessible permanent-delete confirmation; selecting the menu item alone never deletes content.
+
+`components/contribution.tsx` owns the shared responsive create/edit dialog, delete orchestration, and persistent inline success notice. Desktop creation and the mobile floating action open the same form. React Hook Form uses the shared-contract adapters in `lib/contribution-validation.ts`; blank optional title/source fields clear to null. Required categories use the shared `MultiSelection` checkbox group; cities and source URL sit under More details. No selected cities means General. Editing omits `places`, preserving saved associations and ordering without Google requests. `components/ui/textarea.tsx` provides a sufficiently tall, scrollable textarea with resizing disabled.
+
+Creation keeps the originating feed and filters, refreshes results, and announces success with View insight. Editing opens the saved detail view over its list. Deletion uses `components/ui/confirm-dialog.tsx`, identifies the insight and permanent consequence, initially focuses Cancel, retains inline errors for retry, and corrects the refreshed list's pagination. A repeated delete's 404 is reconciled as already removed. There is no Undo for hard deletion.
+
+`components/ui/unsaved-changes.tsx` owns discard confirmation and router/unload guards. Dirty dialogs guard close, outside dismissal, Escape, and navigation; profile fields guard navigation away from the page. Writes disable duplicate submission and keep labels accessible and geometry stable. Failed writes retain in-memory form values. Session loss clears private forms with the existing protected layout; drafts are never persisted. Success and clipboard messages use accessible status regions, while failures remain inline. Clipboard failure includes a selectable absolute link.
+
+`/profile` contains display-name/cohort editing followed by My insights. Email is read-only; an empty cohort clears it. The existing `/api/me` query remains authoritative and successful saves refresh insight author metadata. My insights queries `author=me` across every city and General, newest first, with 20 results per page. Its page and detail UUID live in the URL. `components/insight-list.tsx` shares feed rows and bounded pagination with Browse, and the existing detail dialog retains history, focus, voting, and menu behavior on both pages.
 
 ## Do's and Don'ts
 

@@ -8,15 +8,18 @@ import { ClientError } from "@/lib/errors";
 import { Button } from "./ui/button";
 import { RequestState } from "./ui/request-state";
 import { InsightActions, InsightMetadata } from "./insight";
+import { InsightMenu } from "./insight-menu";
 
 export function InsightDialog({
   id,
   close,
   restoreFocus,
+  listLabel = "Browse",
 }: {
   id: string;
   close: () => void;
   restoreFocus: () => void;
+  listLabel?: string;
 }) {
   const session = useServices();
   const userId = session.queryClient.getQueryData(
@@ -31,9 +34,9 @@ export function InsightDialog({
   useEffect(() => {
     document.title = `${title} · Minerva Atlas`;
     return () => {
-      document.title = "Browse · Minerva Atlas";
+      document.title = `${listLabel === "My insights" ? "My profile" : "Browse"} · Minerva Atlas`;
     };
-  }, [title]);
+  }, [title, listLabel]);
   return (
     <Dialog.Root
       open
@@ -52,6 +55,7 @@ export function InsightDialog({
         >
           <div className="detail-heading">
             <Dialog.Title>{title}</Dialog.Title>
+            {detail.data && <InsightMenu insight={detail.data} />}
             <Button variant="ghost" aria-label="Close insight" onClick={close}>
               <X size={22} aria-hidden="true" />
             </Button>
@@ -63,7 +67,7 @@ export function InsightDialog({
             <div className="empty-state">
               <p>This insight may have been deleted.</p>
               <Button variant="outline" onClick={close}>
-                Back to Browse
+                Back to {listLabel}
               </Button>
             </div>
           ) : detail.isError ? (

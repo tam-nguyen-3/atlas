@@ -139,12 +139,13 @@ Completed locally on 2026-11-06. All 168 tests, formatting, lint, type checks, a
 - **City selection:** remember the last explicitly selected city, including General, in `localStorage`. An explicit URL city takes precedence; otherwise restore a valid saved city or fall back to San Francisco. Storage failures must not block browsing. Cookies are unnecessary because the server does not use this preference.
 - **Feed:** numbered pagination, 20 insights per page. Keep city, committed search, category, sort, and page in validated URL parameters. Reset pagination when filters change.
 - **Details:** shareable modal URLs preserve the underlying feed. Refresh and direct links reopen the insight; Back closes a modal opened from the feed. Narrow screens use a full-height dialog.
+- **Insight actions:** every insight has a visible horizontal three-dot menu in its header, consistently across feed rows, insight details, and My insights. Everyone signed in sees "Copy link"; the logged-in author sees "Copy link", "Edit", and "Delete", in that order. Copy link uses a shareable insight-detail URL and does not change sign-in requirements. Edit opens the shared form; Delete opens the permanent-delete confirmation. Opening or using the menu must not activate the underlying insight row.
 - **Forms:** create and edit use the same responsive modal form. Successful creation returns to the originating feed with its filters preserved, refreshes results, and shows a success message with a "View insight" link. Successful editing returns to the updated detail view.
 - **Deletion:** confirm permanent deletion in an accessible dialog, then return to the originating list and correct pagination if needed.
 - **Places boundary:** Google autocomplete and live place cards remain in Phase 6. Phase 5 needs no Google key, shows existing place counts, and preserves saved place associations during editing.
 - **Defaults:** English UI, no dark mode, no persistent drafts or offline writes. No API contract or database changes are required for Phase 5.
 
-Foundation/design, API/authentication, and Browse/details are implemented. Development and production use live feed/search, shareable insight dialogs, and synchronized upvotes. Contribution and profile editing are next. See [foundation verification](design/foundation-verification.md), [authentication verification](design/authentication-verification.md), and [browse verification](design/browse-verification.md) for checks and design-audit limitations. User visual review remains pending.
+Foundation/design, API/authentication, Browse/details, and Contribution/profile are implemented. Development and production use live feed/search, shareable insight dialogs, synchronized upvotes, insight action menus and CRUD, and profile editing with all-city My insights. See [foundation verification](design/foundation-verification.md), [authentication verification](design/authentication-verification.md), [browse verification](design/browse-verification.md), and [contribution verification](design/contribution-verification.md) for checks and design-audit limitations. Google Places stays in Phase 6; user visual review remains pending.
 
 ### Agent
 
@@ -195,18 +196,22 @@ Completed locally on 2026-11-07: all 233 tests and 68 browser checks passed (34 
 
 #### Contribution and profile
 
-- [ ] Build the shared create/edit form with validation, required multi-category selection, multi-city selection, optional-field clearing, and preservation of saved place associations
-- [ ] Implement the agreed create/edit success destinations and feedback, plus accessible permanent-delete confirmation and list pagination correction
-- [ ] Warn before discarding unsaved changes, preserve entered values after failures, and prevent duplicate submissions
-- [ ] Build profile editing (display name and cohort) and "my insights" across all cities by default
+Completed locally on 2026-11-07: all 241 tests and 94 browser checks passed (47 each against development and production preview), along with formatting, lint, type checks, and build. My insights appears below profile editing, across all cities and General by default. See [verification notes](design/contribution-verification.md) for behavior, checks, and design-audit limits. Google Places stays in Phase 6; user visual review remains unchecked.
+
+- [x] Add the shared shadcn/Radix insight dropdown menu to feed rows, insight details, and My insights: Copy link for everyone, with Edit and Delete only for the logged-in author; include clipboard success/failure feedback and desktop/mobile keyboard/focus behavior
+- [x] Build the shared create/edit form with validation, required multi-category selection, multi-city selection, optional-field clearing, and preservation of saved place associations
+- [x] Implement the agreed create/edit success destinations and feedback, plus accessible permanent-delete confirmation and list pagination correction
+- [x] Warn before discarding unsaved changes, preserve entered values after failures, and prevent duplicate submissions
+- [x] Build profile editing (display name and cohort) and "my insights" across all cities by default
 
 #### Verification
 
-- [ ] Add focused frontend tests and Playwright flows against the real test API and Postgres, signing in through the normal form with the seeded test user
-- [ ] Run browser tests sequentially after API tests; rebuild and seed the test database before browser tests so they cannot overlap API tests that rebuild the shared database
-- [ ] Cover authentication, remembered city and URL precedence, search scope, pagination, modal refresh/Back, CRUD, ownership, voting, profile, and session expiry
-- [ ] Verify loading, empty, no-results, retry, keyboard/focus, long-content, and mobile states; target WCAG 2.2 AA
-- [ ] Run formatting checks, lint, type checks, tests, and build
+- [x] Add focused frontend tests and Playwright flows against the real test API and Postgres, signing in through the normal form with the seeded test user
+- [x] Run browser tests sequentially after API tests; rebuild and seed the test database before browser tests so they cannot overlap API tests that rebuild the shared database
+- [x] Cover authentication, remembered city and URL precedence, search scope, pagination, modal refresh/Back, CRUD, ownership, voting, profile, and session expiry
+- [x] Verify insight-menu actions for authors and other signed-in users, copied-link direct entry through sign-in, clipboard success/failure feedback, and menu interaction without activating the underlying row
+- [x] Verify loading, empty, no-results, retry, keyboard/focus, long-content, and mobile states; target WCAG 2.2 AA
+- [x] Run formatting checks, lint, type checks, tests, and build
 
 ### You
 - [ ] Review the app shell and feed early against the wireframes, including the gold accent, supporting palette, typography, and responsive layout

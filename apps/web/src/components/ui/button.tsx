@@ -34,7 +34,7 @@ export function Button({
     >
       {busy ? (
         <>
-          <span className="invisible">{children}</span>
+          <span className="button-busy-label">{children}</span>
           <LoaderCircle aria-hidden="true" className="button-spinner" />
         </>
       ) : (

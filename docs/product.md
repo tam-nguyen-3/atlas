@@ -47,6 +47,14 @@ Target users: current and incoming Minerva students, and alumni
    - Title, source URL, and places are optional.
    - Authors can edit their own insights and permanently delete them.
 4. Interact: open an insight -> upvote it, or remove the upvote
+5. Share or manage: open the insight's three-dot menu from a feed row, insight details, or My insights
+   - Everyone signed in sees **Copy link**.
+   - The logged-in author sees **Copy link**, **Edit**, and **Delete**, in that order.
+   - Copy link copies a shareable URL that opens that insight's detail dialog. Recipients still need to sign in; sharing does not make content public.
+   - Edit opens the shared form with existing values. Delete opens permanent-delete confirmation before removing the insight.
+
+6. Manage your profile: open **My profile** from the account menu to edit your display name and optional cohort. University email is read-only.
+   - **My insights** appears below the profile form, showing your contributions across all cities and General, newest first, with numbered pagination.
 
 # Browsing and ownership rules
 - An insight appears in the feed of every city it belongs to.

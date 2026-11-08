@@ -362,3 +362,84 @@ describe("insight transport", () => {
     expect(scope.onUnauthorized).toHaveBeenCalledOnce();
   });
 });
+
+describe("contribution transport", () => {
+  test("sends JSON profile updates and validates the returned profile", async () => {
+    const fetcher = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(reply({ ...profile, cohort: "M27" }));
+    const api = createApiClient(new RequestScope(), fetcher);
+    expect((await api.updateProfile({ cohort: "M27" })).cohort).toBe("M27");
+    expect(fetcher).toHaveBeenCalledWith(
+      "/api/me",
+      expect.objectContaining({
+        method: "PATCH",
+        credentials: "include",
+        body: JSON.stringify({ cohort: "M27" }),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }),
+    );
+    fetcher.mockResolvedValueOnce(reply({}));
+    await expect(api.updateProfile({ cohort: null })).rejects.toMatchObject({
+      source: "response",
+    });
+  });
+  test("DELETE accepts an empty 204 and a repeated 404 stays an error", async () => {
+    const fetcher = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response(null, { status: 204 }))
+      .mockResolvedValueOnce(
+        reply({ error: { code: "NOT_FOUND", message: "Missing" } }, 404),
+      );
+    const api = createApiClient(new RequestScope(), fetcher);
+    await expect(api.deleteInsight(profile.id)).resolves.toBeUndefined();
+    await expect(api.deleteInsight(profile.id)).rejects.toMatchObject({
+      status: 404,
+    });
+    expect(fetcher).toHaveBeenCalledTimes(2);
+  });
+  test("editing leaves places omitted and does not retry rejected writes", async () => {
+    const fetcher = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(
+        reply({ error: { code: "FORBIDDEN", message: "Not the author" } }, 403),
+      );
+    const scope = new RequestScope();
+    scope.onUnauthorized = vi.fn();
+    const fields = {
+      title: null,
+      sourceUrl: null,
+      citySlugs: [],
+      categorySlugs: ["food"],
+      body: "Updated advice",
+    };
+    await expect(
+      createApiClient(scope, fetcher).updateInsight(profile.id, fields),
+    ).rejects.toMatchObject({ status: 403 });
+    expect(fetcher.mock.calls[0]?.[1]?.body).toBe(JSON.stringify(fields));
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    expect(scope.onUnauthorized).not.toHaveBeenCalled();
+  });
+  test("late profile writes cannot publish across a session reset", async () => {
+    let resolve!: (value: Response) => void;
+    const scope = new RequestScope();
+    const fetcher = vi.fn<typeof fetch>().mockImplementation(
+      () =>
+        new Promise((done) => {
+          resolve = done;
+        }),
+    );
+    const pending = createApiClient(scope, fetcher).updateProfile({
+      displayName: "Updated",
+    });
+    const assertion = expect(pending).rejects.toMatchObject({
+      name: "AbortError",
+    });
+    scope.reset();
+    resolve(reply(profile));
+    await assertion;
+  });
+});

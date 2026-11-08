@@ -19,9 +19,12 @@ import { safeReturnTo } from "./lib/auth-validation";
 import type { Session } from "./lib/session";
 import { AuthScreen } from "./auth-screen";
 import { Browse } from "./browse";
+import { Profile } from "./profile";
+import { ContributionProvider } from "./components/contribution";
 import { AccountMenu } from "./components/account-menu";
 import {
   browseSearchSchema,
+  profileSearchSchema,
   parseRouteSearch,
   stringifyRouteSearch,
 } from "./lib/browse-state";
@@ -49,10 +52,9 @@ function Brand() {
       className="wordmark"
       aria-label="Atlas home"
     >
-      <span className="brand-mark" aria-hidden="true">
-        a
-      </span>
-      atlas<span className="wordmark-dot">.</span>
+      <span className="brand-mark" aria-hidden="true" />
+      atlas
+      <span className="wordmark-dot" aria-hidden="true" />
     </Link>
   );
 }
@@ -163,7 +165,9 @@ function ProtectedLayout() {
     );
   return (
     <Frame authenticated>
-      <Outlet />
+      <ContributionProvider key={me.data.id}>
+        <Outlet />
+      </ContributionProvider>
       {router.state.status === "pending" && (
         <p className="navigation-status" role="status">
           Loading page…
@@ -274,12 +278,8 @@ const agentRoute = createRoute({
 const profileRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: "/profile",
-  component: () => (
-    <Placeholder
-      title="My profile"
-      description="Profile editing and your insights are coming next."
-    />
-  ),
+  validateSearch: profileSearchSchema,
+  component: Profile,
 });
 const authRoutes = (["sign-in", "sign-up"] as const).map((mode) =>
   createRoute({

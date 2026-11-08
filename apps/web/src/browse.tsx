@@ -1,17 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Link,
-  useNavigate,
-  useRouterState,
-  useRouter,
-} from "@tanstack/react-router";
+import { useNavigate, useRouterState, useRouter } from "@tanstack/react-router";
 import { Plus, SlidersHorizontal } from "lucide-react";
 import { Button } from "./components/ui/button";
 import { AccessibleSelect } from "./components/ui/select";
 import { RequestState } from "./components/ui/request-state";
 import { BrowseSearch } from "./components/browse-search";
-import { InsightActions, InsightMetadata } from "./components/insight";
+import { InsightRows, InsightPagination } from "./components/insight-list";
+import { useContribution } from "./components/contribution";
 import { InsightDialog } from "./components/insight-dialog";
 import { useServices } from "./lib/app-context";
 import { rememberCity } from "./lib/city";
@@ -19,7 +15,6 @@ import {
   feedQuery,
   isCanonicalBrowseSearch,
   normalizeBrowseSearch,
-  pageNumbers,
   type BrowseState,
 } from "./lib/browse-state";
 import { feedOptions } from "./lib/insights";
@@ -32,6 +27,7 @@ declare module "@tanstack/react-router" {
 
 export function Browse() {
   const session = useServices();
+  const contribution = useContribution();
   const { api, queryClient, meOptions } = session;
   const userId = queryClient.getQueryData(meOptions.queryKey)!.id;
   const cities = useQuery({
@@ -155,14 +151,14 @@ export function Browse() {
               : "Local knowledge. Shared by Minervans."}
           </p>
         </div>
-        <Button disabled aria-describedby="contribution-upcoming">
+        <Button
+          className="desktop-create"
+          onClick={() => contribution.create(state.city)}
+        >
           <Plus size={18} aria-hidden="true" />
           Create insight
         </Button>
       </div>
-      <p className="sr-only" id="contribution-upcoming">
-        Creating insights is coming soon.
-      </p>
       <BrowseSearch
         committed={state.q ?? ""}
         navigationKey={location.href}
@@ -285,93 +281,26 @@ export function Browse() {
               Refreshing insights…
             </p>
           )}
-          <div className="insight-feed">
-            {feed.data.items.map((insight) => (
-              <article
-                className="insight"
-                key={insight.id}
-                aria-label={
-                  insight.title ?? `Insight by ${insight.author.displayName}`
-                }
-              >
-                <span className="avatar" aria-hidden="true">
-                  {Array.from(insight.author.displayName)[0]}
-                </span>
-                <div className="insight-content">
-                  <InsightMetadata insight={insight} />
-                  <Link
-                    className="insight-link"
-                    to="/browse"
-                    search={{ ...state, insight: insight.id }}
-                    state={{ atlasInsightOrigin: location.href }}
-                    resetScroll={false}
-                    preload={false}
-                    onClick={(event) => {
-                      if (
-                        !event.ctrlKey &&
-                        !event.metaKey &&
-                        !event.shiftKey &&
-                        !event.altKey
-                      )
-                        opener.current = event.currentTarget;
-                    }}
-                  >
-                    {insight.title && <h2>{insight.title}</h2>}
-                    <p className="insight-prose">{insight.bodyPreview}</p>
-                    <span className="read-insight">
-                      Read insight
-                      <span className="sr-only">
-                        {" "}
-                        by {insight.author.displayName}
-                      </span>
-                    </span>
-                  </Link>
-                  <InsightActions insight={insight} />
-                </div>
-              </article>
-            ))}
-          </div>
-          <nav className="pagination" aria-label="Insight pages">
-            <Button
-              variant="ghost"
-              disabled={state.page === 1}
-              onClick={() => change({ page: state.page - 1 }, false)}
-            >
-              Previous
-            </Button>
-            {pageNumbers(state.page, pages).map((page, index) =>
-              page === "gap" ? (
-                <span key={`gap-${index}`} aria-hidden="true">
-                  …
-                </span>
-              ) : (
-                <Button
-                  key={page}
-                  variant={page === state.page ? "default" : "ghost"}
-                  aria-label={`Page ${page}`}
-                  aria-current={page === state.page ? "page" : undefined}
-                  onClick={() => change({ page }, false)}
-                >
-                  {page}
-                </Button>
-              ),
-            )}
-            <Button
-              variant="ghost"
-              disabled={state.page === pages}
-              onClick={() => change({ page: state.page + 1 }, false)}
-            >
-              Next
-            </Button>
-          </nav>
-          <p className="page-range muted">
-            {((state.page - 1) * 20 + 1).toLocaleString("en")}–
-            {Math.min(state.page * 20, feed.data.total).toLocaleString("en")} of{" "}
-            {feed.data.total.toLocaleString("en")}{" "}
-            {feed.data.total === 1 ? "insight" : "insights"}
-          </p>
+          <InsightRows
+            items={feed.data.items}
+            open={(element) => {
+              opener.current = element;
+            }}
+          />
+          <InsightPagination
+            page={state.page}
+            total={feed.data.total}
+            change={(page) => change({ page }, false)}
+          />
         </>
       )}
+      <Button
+        className="floating-create"
+        aria-label="Create insight"
+        onClick={() => contribution.create(state.city)}
+      >
+        <Plus size={24} aria-hidden="true" />
+      </Button>
       {state.insight && (
         <InsightDialog
           key={state.insight}

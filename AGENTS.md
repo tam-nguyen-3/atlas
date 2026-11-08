@@ -4,7 +4,7 @@ This file provides project guidance to Codex and other coding agents working in 
 
 ## Current state
 
-Minerva Atlas is a sign-in-only knowledge-sharing platform for Minerva University students, organised around rotation cities. The database and core APIs are implemented, along with frontend authentication, protected navigation, browsing/search, insight details, and upvotes. See [docs/plan.md](docs/plan.md) for current progress and remaining work.
+Minerva Atlas is a sign-in-only knowledge-sharing platform for Minerva University students, organised around rotation cities. The database and core APIs are implemented, along with frontend authentication, protected navigation, browsing/search, insight details and upvotes, contribution/action menus, and profile editing with My insights. See [docs/plan.md](docs/plan.md) for current progress and remaining work. The [contribution review map](docs/design/contribution-verification.md#review-map) identifies the key files, core changes, and review priorities for the latest slice. Google Places remains in Phase 6; user visual review is pending.
 
 ## Navigation
 
@@ -14,6 +14,8 @@ Before editing `apps/api` or `apps/web`, read the relevant package guide: [API](
 |---|---|
 | Browse filters and URL state | `apps/web/src/lib/browse-state.ts` |
 | Feed/detail queries and voting | `apps/web/src/lib/insights.ts` |
+| Insight creation, editing, deletion, and action menus | `apps/web/src/components/contribution.tsx` and `apps/web/src/components/insight-menu.tsx` |
+| Profile editing and My insights | `apps/web/src/profile.tsx` |
 | Frontend session handling | `apps/web/src/lib/session.ts` |
 | API insight behavior | `apps/api/src/insights/` |
 | Request/response contracts | `packages/shared/src/` |
@@ -62,6 +64,7 @@ pnpm build                                # Builds all packages
 - Screens with no wireframe (sign-up, sign-in, profile, "my insights", edit, delete) follow the existing wireframe style.
 - `docs/plan.md` splits each phase into **Agent** and **You** steps. Do only the Agent steps, and ask the user for the rest (accounts, secrets, production migrations).
 - Tick a plan box when its step is done. If a decision changes the scope, update the affected spec too.
+- When completing a feature slice, add a concise review map to its verification notes: key files, core behavior changes, and what reviewers should check. Link it from this guide's Current state section, and include the review starting points and verification results in the handoff. Keep detailed implementation summaries out of this guide.
 - Free-tier limits and Google terms in `docs/architecture.md` were checked on 2026-11-04 and can change. Check them again before relying on them.
 
 ## Architecture

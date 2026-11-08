@@ -6,8 +6,11 @@ import {
   insightDetailSchema,
   voteSchema,
   type FeedQuery,
+  type CreateInsight,
+  type UpdateInsight,
+  type UpdateProfile,
 } from "@atlas/shared";
-import type { z } from "zod";
+import { z } from "zod";
 import { atlasError, ClientError, networkError } from "./errors";
 import { RequestScope } from "./request-scope";
 
@@ -21,6 +24,7 @@ export function createApiClient(
     signal?: AbortSignal,
     protectedRequest = true,
     method = "GET",
+    payload?: unknown,
   ) {
     return scope.run(
       async (requestSignal) => {
@@ -30,7 +34,13 @@ export function createApiClient(
             credentials: "include",
             cache: "no-store",
             signal: requestSignal,
-            headers: { Accept: "application/json" },
+            headers: {
+              Accept: "application/json",
+              ...(payload !== undefined
+                ? { "Content-Type": "application/json" }
+                : {}),
+            },
+            ...(payload !== undefined ? { body: JSON.stringify(payload) } : {}),
           });
           const body: unknown = await response.json().catch(() => undefined);
           if (!response.ok) throw atlasError(body, response.status);
@@ -54,6 +64,27 @@ export function createApiClient(
     // The session query handles its own 401 so it can commit null atomically.
     getMe: (signal?: AbortSignal) =>
       request("/me", profileSchema, signal, false),
+    updateProfile: (values: UpdateProfile, signal?: AbortSignal) =>
+      request("/me", profileSchema, signal, true, "PATCH", values),
+    createInsight: (values: CreateInsight, signal?: AbortSignal) =>
+      request("/insights", insightDetailSchema, signal, true, "POST", values),
+    updateInsight: (id: string, values: UpdateInsight, signal?: AbortSignal) =>
+      request(
+        `/insights/${encodeURIComponent(id)}`,
+        insightDetailSchema,
+        signal,
+        true,
+        "PATCH",
+        values,
+      ),
+    deleteInsight: (id: string, signal?: AbortSignal): Promise<void> =>
+      request(
+        `/insights/${encodeURIComponent(id)}`,
+        z.void(),
+        signal,
+        true,
+        "DELETE",
+      ),
     getCities: (signal?: AbortSignal) =>
       request("/cities", citiesSchema, signal),
     getCategories: (signal?: AbortSignal) =>

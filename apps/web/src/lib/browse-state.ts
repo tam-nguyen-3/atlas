@@ -55,6 +55,11 @@ export const browseSearchSchema = z.object({
     .catch(undefined),
   insight: z.uuid().optional().catch(undefined),
 });
+export const profileSearchSchema = browseSearchSchema.pick({
+  page: true,
+  insight: true,
+});
+
 export type BrowseSearch = z.infer<typeof browseSearchSchema>;
 export type BrowseState = BrowseSearch & {
   city: string;

@@ -25,6 +25,10 @@
   --z-backdrop: 500;
   --z-sheet: 700;
   --z-account-menu: 710;
+  --z-editor-backdrop: 720;
+  --z-editor: 730;
+  --z-confirmation-backdrop: 740;
+  --z-confirmation: 750;
   --overlay: #24242480;
 }
 @theme inline {
@@ -119,8 +123,8 @@ p {
 .header-inner {
   max-width: 1008px;
   margin: auto;
-  padding: 0 24px;
-  min-height: 88px;
+  padding: 0 12px;
+  min-height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -152,7 +156,7 @@ p {
 }
 nav {
   display: flex;
-  gap: 8px;
+  gap: 4px;
 }
 .nav-link {
   display: flex;
@@ -1031,5 +1035,205 @@ nav {
   }
   .detail-body .insight-prose {
     font-size: 16px;
+  }
+}
+
+/* Contribution controls share Atlas's existing menu and modal foundations. */
+.insight-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.insight-header .insight-meta {
+  flex: 1;
+  min-width: 0;
+}
+.insight-menu-container {
+  flex-shrink: 0;
+}
+.insight-menu {
+  z-index: var(--z-account-menu);
+}
+.insight-menu .account-menu-item {
+  cursor: pointer;
+}
+.danger-text {
+  color: var(--danger);
+}
+.copy-feedback {
+  max-width: 240px;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.copy-feedback .input {
+  width: 100%;
+}
+.detail-heading > h2 {
+  flex: 1;
+}
+.editor-overlay {
+  z-index: var(--z-editor-backdrop);
+}
+.editor-dialog {
+  z-index: var(--z-editor);
+}
+.confirmation-overlay {
+  z-index: var(--z-confirmation-backdrop);
+}
+.confirmation-dialog {
+  z-index: var(--z-confirmation);
+  width: min(480px, calc(100vw - 40px));
+  height: auto;
+  inset: auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-height: calc(100dvh - 40px);
+}
+.confirmation-dialog h2,
+.my-insights h2 {
+  font-family: var(--font-heading);
+  font-size: 23px;
+  font-weight: 700;
+}
+.confirmation-dialog p {
+  margin-top: 16px;
+  overflow-wrap: anywhere;
+}
+.atlas-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 24px;
+}
+.atlas-form label,
+.multi-selection legend {
+  font-weight: 600;
+}
+.atlas-form .input {
+  width: 100%;
+  margin-top: 6px;
+}
+.field-help {
+  min-height: 24px;
+  font-size: 14px;
+  margin-top: 4px;
+}
+.textarea {
+  resize: none;
+  min-height: 220px;
+  line-height: 1.55;
+}
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+.form-feedback {
+  min-height: 26px;
+}
+.multi-selection {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+.selection-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 8px;
+}
+.selection-options label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  cursor: pointer;
+}
+.selection-options input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.selection-options input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+.selection-options input:disabled,
+fieldset:disabled label {
+  cursor: default;
+}
+.atlas-form summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding-block: 8px;
+  color: var(--accent);
+  font-weight: 600;
+}
+.atlas-form summary:hover {
+  text-decoration: underline;
+}
+.more-details {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-top: 12px;
+}
+.profile-form {
+  max-width: 560px;
+}
+.my-insights {
+  border-top: 1px solid var(--border);
+  margin-top: 40px;
+  padding-top: 32px;
+}
+.contribution-notice {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: var(--accent-soft);
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+}
+@media (max-width: 767px) {
+  .desktop-create {
+    display: none;
+  }
+}
+
+.copy-status {
+  display: block;
+  max-width: 100px;
+  font-size: 14px;
+  color: var(--success);
+}
+
+.button-busy-label {
+  opacity: 0;
+}
+.wordmark .brand-mark::before {
+  content: "a";
+}
+.wordmark-dot::before {
+  content: ".";
+}
+
+.profile-heading {
+  font-family: var(--font-heading);
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 12px;
+}
+@media (max-width: 767px) {
+  .profile-heading {
+    font-size: 29px;
   }
 }
