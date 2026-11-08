@@ -4,7 +4,7 @@ This file provides project guidance to Codex and other coding agents working in 
 
 ## Current state
 
-Minerva Atlas is a sign-in-only knowledge-sharing platform for Minerva University students, organised around rotation cities. The database and core APIs are implemented, along with frontend authentication, protected navigation, browsing/search, insight details and upvotes, contribution/action menus, and profile editing with My insights. See [docs/plan.md](docs/plan.md) for current progress and remaining work. The [contribution review map](docs/design/contribution-verification.md#review-map) identifies the key files, core changes, and review priorities for the latest slice. Google Places remains in Phase 6; user visual review is pending.
+Minerva Atlas is a sign-in-only knowledge-sharing platform for Minerva University students, organised around rotation cities. The database and core APIs are implemented, along with frontend authentication, protected navigation, browsing/search, insight details and upvotes, contribution/action menus, and profile editing with My insights. See [docs/plan.md](docs/plan.md) for current progress and remaining work. The [contribution review map](docs/design/contribution-verification.md#review-map) identifies the key files, core changes, and review priorities for the latest slice. The [walkthrough seed review map](docs/design/walkthrough-seed-verification.md#review-map) covers the local demo dataset. Google Places remains in Phase 6; user visual review is pending.
 
 ## Navigation
 

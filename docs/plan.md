@@ -217,6 +217,13 @@ Completed locally on 2026-11-07: all 241 tests and 94 browser checks passed (47 
 - [ ] Review the app shell and feed early against the wireframes, including the gold accent, supporting palette, typography, and responsive layout
 - [ ] Review all completed flows on desktop and mobile, including screens without wireframes, and give feedback
 
+## Local walkthrough seed
+
+### Agent
+- [x] Add a separate local-only, repeatable 60-insight demo seed with fictional authors, valid votes, and eight contributions for an existing owner
+- [x] Test preservation, database guards, transaction rollback, and authenticated browsing/search/ownership behavior
+- [x] Run local seed, verify walkthrough API flows, and record results in [verification notes](design/walkthrough-seed-verification.md)
+
 ## Phase 6: Google Places
 
 ### You

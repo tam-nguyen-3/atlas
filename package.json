@@ -25,7 +25,8 @@
     "start:api": "pnpm --filter @atlas/api start",
     "dev:web": "pnpm --filter @atlas/shared build && pnpm --filter @atlas/web dev",
     "preview:web": "pnpm --filter @atlas/web preview",
-    "test:web:browser": "pnpm build && pnpm --filter @atlas/api exec tsx src/test/run-browser.ts"
+    "test:web:browser": "pnpm build && pnpm --filter @atlas/api exec tsx src/test/run-browser.ts",
+    "db:seed:demo": "pnpm --filter @atlas/api db:seed:demo"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

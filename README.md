@@ -114,23 +114,24 @@ A successful run prints `HTTP smoke passed`. The script closes its listener and 
 
 Run these from the repo root.
 
-| Script              | What it does                                                                                                     |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `pnpm lint`         | Lint with ESLint                                                                                                 |
-| `pnpm format`       | Format with Prettier                                                                                             |
-| `pnpm format:check` | Check formatting without changing files                                                                          |
-| `pnpm typecheck`    | Type check all packages and tests                                                                                |
-| `pnpm test`         | Run all tests with Vitest (needs Postgres running)                                                               |
-| `pnpm smoke:api`    | Run the two-user HTTP smoke sequence against `atlas_test`, then clean up its temporary content                   |
-| `pnpm build`        | Build all packages                                                                                               |
-| `pnpm dev:api`      | Build shared contracts and start the API with file watching                                                      |
-| `pnpm start:api`    | Run the compiled API (run `pnpm build` first)                                                                    |
-| `pnpm db:up`        | Start local Postgres                                                                                             |
-| `pnpm db:down`      | Stop local Postgres and keep its data                                                                            |
-| `pnpm db:generate`  | Generate a migration from the schema                                                                             |
-| `pnpm db:migrate`   | Apply migrations to `DATABASE_URL`                                                                               |
-| `pnpm db:seed`      | Seed cities and categories in `DATABASE_URL`; safe to re-run                                                     |
-| `pnpm db:seed:test` | Seed the test user in `TEST_DATABASE_URL`; requires `NODE_ENV=test`, `atlas_test`, and explicit test credentials |
+| Script              | What it does                                                                                                                                   |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm lint`         | Lint with ESLint                                                                                                                               |
+| `pnpm format`       | Format with Prettier                                                                                                                           |
+| `pnpm format:check` | Check formatting without changing files                                                                                                        |
+| `pnpm typecheck`    | Type check all packages and tests                                                                                                              |
+| `pnpm test`         | Run all tests with Vitest (needs Postgres running)                                                                                             |
+| `pnpm smoke:api`    | Run the two-user HTTP smoke sequence against `atlas_test`, then clean up its temporary content                                                 |
+| `pnpm build`        | Build all packages                                                                                                                             |
+| `pnpm dev:api`      | Build shared contracts and start the API with file watching                                                                                    |
+| `pnpm start:api`    | Run the compiled API (run `pnpm build` first)                                                                                                  |
+| `pnpm db:up`        | Start local Postgres                                                                                                                           |
+| `pnpm db:down`      | Stop local Postgres and keep its data                                                                                                          |
+| `pnpm db:generate`  | Generate a migration from the schema                                                                                                           |
+| `pnpm db:migrate`   | Apply migrations to `DATABASE_URL`                                                                                                             |
+| `pnpm db:seed`      | Seed cities and categories in `DATABASE_URL`; safe to re-run                                                                                   |
+| `pnpm db:seed:demo` | Seed local walkthrough content; requires an existing `DEMO_OWNER_EMAIL`; see [walkthrough guide](docs/design/walkthrough-seed-verification.md) |
+| `pnpm db:seed:test` | Seed the test user in `TEST_DATABASE_URL`; requires `NODE_ENV=test`, `atlas_test`, and explicit test credentials                               |
 
 To run one project or one test file:
 
