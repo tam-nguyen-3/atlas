@@ -1,0 +1,84 @@
+name: Bug report
+description: Something in Minerva Atlas is broken or behaves unexpectedly.
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Please don't paste real passwords, session cookies, API keys, or other secrets.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: A short description of the problem.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Sign in as ...
+        2. Go to Browse and select ...
+        3. Click ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-actual
+    attributes:
+      label: Expected vs actual behavior
+      placeholder: |
+        Expected: ...
+        Actual: ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Web UI
+        - API
+        - Shared contracts
+        - Database and migrations
+        - Auth and sessions
+        - Search and browse
+        - Deployment
+        - Docs
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - Local development
+        - Local production preview
+        - Deployed (Vercel + Render)
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and OS
+      placeholder: e.g. Chrome 140 on macOS 26
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Relevant console or server output. This is rendered as code, so no backticks are needed.
+      render: shell
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots or additional context
