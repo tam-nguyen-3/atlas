@@ -1,0 +1,56 @@
+name: Feature request
+description: Suggest a new feature or an improvement to Minerva Atlas.
+title: "[Feature] "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or user need
+      description: Who is this for, and what can't they do today?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: What should happen? Include flows, UI notes, or API changes if you have them.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Web UI
+        - API
+        - Shared contracts
+        - Database and migrations
+        - Auth and sessions
+        - Search and browse
+        - Deployment
+        - Docs
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: related
+    attributes:
+      label: Related spec or plan phase
+      description: Link the relevant part of docs/product.md, docs/plan.md, or another spec, if any.
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope check
+      options:
+        - label: I checked docs/product.md, and this isn't already listed as out of scope (such as media, replies, or the Discover map).
+        - label: This respects the cross-spec rules in AGENTS.md (allowed email domains, General meaning no city, storing only Google place IDs).
